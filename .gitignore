@@ -1,23 +1,12 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Virtual Environments
+# Virtual Environment
 venv/
-env/
-.env
+*.env
 
-# Streamlit
+# Python cache
+__pycache__/
+*.pyc
+
+# Streamlit/PyTorch/Local Data
 .streamlit/
-
-# Database (ChromaDB persistence)
-chroma_db_streamlit/
 chroma_db/
-
-# MacOS junk
-.DS_Store
-
-# User uploads (Don't track PDF test files)
-*.pdf
-temp.pdf
+.ipynb_checkpoints/
