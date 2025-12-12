@@ -1,12 +1,51 @@
-# Virtual Environment
-venv/
-*.env
+# ----------------------------------------
+# 1. ENVIRONMENT AND PYTHON ARTIFACTS
+# ----------------------------------------
 
-# Python cache
+# Virtual Environment folder
+venv/
+.venv/
+
+# Byte-code and temporary files
 __pycache__/
 *.pyc
+*.pyd
+*.so
 
-# Streamlit/PyTorch/Local Data
-.streamlit/
+# Pip-generated files
+pip-log.txt
+pip-delete-this-file.txt
+
+# ----------------------------------------
+# 2. APPLICATION SECRETS AND DATA
+# ----------------------------------------
+
+# Environment variable file containing the API Key
+.env
+
+# ChromaDB local vector store (This is large and rebuilt on demand)
 chroma_db/
-.ipynb_checkpoints/
+
+# Streamlit config (if generated)
+.streamlit/config.toml
+
+# ----------------------------------------
+# 3. VS CODE AND IDE TEMPORARY FILES
+# ----------------------------------------
+
+# VS Code directory (optional, but usually safe to ignore)
+.vscode/
+
+# Temporary file created by the Code Runner extension (the file that was accidentally pushed)
+tempCodeRunnerFile.py
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# ----------------------------------------
+# 4. PYTHON PACKAGES & DISTRIBUTABLES
+# ----------------------------------------
+
+dist/
+build/
+*.egg-info
