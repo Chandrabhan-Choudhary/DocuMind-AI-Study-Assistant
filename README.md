@@ -31,30 +31,6 @@ The system is a fully refactored **Retrieval-Augmented Generation (RAG)** pipeli
 
 The final system architecture focuses on stability, efficiency, and accurate retrieval:
 
-```mermaid
-graph TD
-    subgraph Ingestion
-        A[PDF Textbook] -->|PyPDFLoader| B(Text Chunks)
-        B -->|MiniLM-L6-v2| C(Vector Embeddings)
-    end
-    
-    subgraph Storage
-        C -->|Store| D[(ChromaDB)]
-    end
-    
-    subgraph Retrieval_and_Generation
-        E[User Question] -->|Embed| F(Query Vector)
-        F <-->|Similarity Search| D
-        D -->|Retrieve Context| G(Relevant Chunks)
-        G -->|Combine| H[Gemini 1.5 Pro/Flash]
-        E --> H
-        H -->|Generate| I[Final Answer / Quiz]
-    end
-
-    style A fill:#ffcccc,stroke:#333,stroke-width:2px
-    style D fill:#e6ccff,stroke:#333,stroke-width:2px
-    style H fill:#ffedcc,stroke:#333,stroke-width:4px
-
 1.  **Ingestion:** Loads and chunks PDF content using `pypdf`.
 2.  **Embedding:** Uses the **Local HuggingFace Model (`MiniLM-L6-v2`)** for vectorization, eliminating cloud API dependency and ensuring fast, stable document processing.
 3.  **Storage:** Stores the persistent knowledge base in **ChromaDB**.
@@ -113,4 +89,4 @@ graph TD
 * Support for analyzing multiple documents simultaneously.
 
 ---
-*Built by Chandrabhan Choudhary* 
+*Built by Chandrabhan Choudhary*
