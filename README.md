@@ -113,4 +113,4 @@ graph TD
 * Support for analyzing multiple documents simultaneously.
 
 ---
-*Built by Chandrabhan Choudhary*
+*Built by Chandrabhan Choudhary* 
