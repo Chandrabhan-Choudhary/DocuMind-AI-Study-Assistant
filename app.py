@@ -31,7 +31,7 @@ with st.sidebar:
     
     # --- MODEL SWITCHER ---
     st.subheader("⚙️ AI Configuration")
-    model_choice = st.radio(
+    model_choice = st.selectbox(
         "Select Model:",
         ["Gemini Flash (Fast)", "Gemini Pro (Smart)"],
         index=0
