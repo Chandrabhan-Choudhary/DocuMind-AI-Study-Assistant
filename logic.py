@@ -11,6 +11,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from dotenv import load_dotenv
 import streamlit as st
+import torch  # Required for GPU detection
 
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
@@ -50,15 +51,30 @@ print(f"🧠 Active Pro Model:   {PRO_MODEL_NAME}")
 # --- CONFIGURATION ---
 CHUNK_SIZE = 1000 
 CHUNK_OVERLAP = 200
-BATCH_SIZE = 10      
-MAX_CHUNKS = 100     
+BATCH_SIZE = 10       
+MAX_CHUNKS = 100      
 
-# --- CACHING THE EMBEDDING MODEL ---
+# --- CACHING THE EMBEDDING MODEL (GPU OPTIMIZED) ---
 @st.cache_resource
 def load_embedding_model():
     """Load the local model once and keep it in memory for instant access."""
-    print("⏳ Loading HuggingFace Embedding Model...")
-    return HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    
+    # Check for GPU (NVIDIA CUDA) or Mac (MPS), fallback to CPU
+    if torch.cuda.is_available():
+        device = "cuda"
+    elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+        device = "mps"
+    else:
+        device = "cpu"
+        
+    print(f"⏳ Loading HuggingFace Embedding Model on {device.upper()}...")
+    
+    # Load with device parameter
+    return HuggingFaceEmbeddings(
+        model_name="all-MiniLM-L6-v2",
+        model_kwargs={'device': device},
+        encode_kwargs={'normalize_embeddings': False}
+    )
 
 EMBED_MODEL = load_embedding_model()
 
@@ -91,7 +107,7 @@ def create_vector_store(text):
             print("⚠️ Database locked. Appending to existing DB.")
     
     # Create DB using Local Embeddings
-    print(f"Processing {len(chunks)} chunks locally (Offline Mode)...")
+    print(f"Processing {len(chunks)} chunks locally...")
     db = Chroma.from_texts(
         texts=chunks, 
         embedding=EMBED_MODEL, 
@@ -99,10 +115,6 @@ def create_vector_store(text):
     )
     print("✅ Vector Store Created Successfully")
     return True
-
-
-# NOTE: optimize_query function has been removed to avoid the 429 API error bottleneck.
-# The logic is now integrated into the prompt below.
 
 def get_rag_response(question, model_selection="flash"):
     """
