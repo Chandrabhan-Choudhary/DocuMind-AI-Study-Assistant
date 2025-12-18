@@ -3,7 +3,7 @@ import os
 import time
 from dotenv import load_dotenv
 # ALL NECESSARY FUNCTIONS MUST BE IMPORTED HERE
-from logic import get_pdf_text, create_vector_store, get_rag_response, generate_quiz, load_embedding_model
+from logic import get_pdf_text, create_vector_store, get_rag_response, generate_quiz
 
 # --- Initial Setup and Loading ---
 st.set_page_config(page_title="DocuMind", page_icon="🧠", layout="wide")
@@ -13,12 +13,8 @@ if not os.getenv("GOOGLE_API_KEY"):
     st.error("⚠️ API Key missing! Check your .env file.")
     st.stop()
 
-# Performance Improvement: Show Spinner while Loading Model 
-# This loads the heavy model once and caches it.
-if "embedding_model_loaded" not in st.session_state:
-    with st.spinner("⏳ Starting Up... Loading Local Embedding Model (First time only)"):
-        load_embedding_model()
-    st.session_state["embedding_model_loaded"] = True
+# NOTE: The "Startup Spinner" block has been removed to ensure the UI renders instantly.
+# The embedding model will now load automatically when you first use it.
 
 # Session Persistence Check
 if os.path.exists("./chroma_db"):
@@ -44,7 +40,8 @@ with st.sidebar:
     
     if st.button("Process Docs", type="primary"):
         if uploaded_files:
-            with st.spinner("Analyzing Content (Local CPU)..."):
+            # The spinner will run here while the model loads in the background
+            with st.spinner("Analyzing Content (This may take a moment first time)..."):
                 raw_text = get_pdf_text(uploaded_files)
                 success = create_vector_store(raw_text)
                 if success:
@@ -83,7 +80,7 @@ if 'processed' in st.session_state:
             st.session_state.messages.append({"role": "user", "content": prompt})
             st.chat_message("user").write(prompt)
             
-            # --- START SIMPLE STABLE FEEDBACK (The Fix) ---
+            # --- START SIMPLE STABLE FEEDBACK ---
             try:
                 # Use a single, reliable spinner for the entire process
                 with st.spinner(f"Thinking with {model_choice}..."):
@@ -104,7 +101,7 @@ if 'processed' in st.session_state:
                 else:
                     # Handle the error string returned from logic.py
                     st.chat_message("assistant").error(response_data)
-                    # We do not save the error message to session state (Crucial stability fix)
+                    # We do not save the error message to session state
                     
             except Exception as final_error:
                 # If a crash happens, print the error to the screen instead of going white
